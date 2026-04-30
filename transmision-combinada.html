@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmisión Combinada</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="contenedor-principal calculadora-combinada">
+
+        <h1>Transmisión Combinada</h1>
+
+        <!-- ======================================================
+             IMAGEN DE REFERENCIA
+             Cambia la ruta por la imagen que uses en tu proyecto
+             ====================================================== -->
+        <div class="imagen-transmision-combinada">
+            <img 
+                src="img/transmision-combinada.png" 
+                alt="Esquema de transmisión combinada polea-correa y piñón-cadena"
+            >
+        </div>
+
+        <p class="mensaje-info">
+            Herramienta para analizar una transmisión mecánica de doble etapa:
+            primera etapa por polea-correa y segunda etapa por piñón-cadena.
+        </p>
+
+        <!-- ======================================================
+             DATOS INICIALES DEL SISTEMA
+             ====================================================== -->
+        <section class="datos-iniciales-combinada">
+            <h3>Datos iniciales del sistema</h3>
+
+            <div class="campo">
+                <label for="potenciaMotorCombinada">Potencia del motor HP</label>
+                <input 
+                    type="number"
+                    id="potenciaMotorCombinada"
+                    min="0"
+                    step="0.01"
+                    placeholder="Ej: 10"
+                    autocomplete="off"
+                    oninput="calcularRelacionVelocidadCombinada()"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="rpmMotorCombinada">RPM del motor</label>
+                <input 
+                    type="number"
+                    id="rpmMotorCombinada"
+                    min="0"
+                    step="1"
+                    placeholder="Ej: 1750"
+                    autocomplete="off"
+                    oninput="calcularRelacionVelocidadCombinada()"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="rpmSalidaRequeridaCombinada">RPM final requerida</label>
+                <input 
+                    type="number"
+                    id="rpmSalidaRequeridaCombinada"
+                    min="0"
+                    step="1"
+                    placeholder="Ej: 120"
+                    autocomplete="off"
+                    oninput="calcularRelacionVelocidadCombinada()"
+                >
+            </div>
+        </section>
+
+        <!-- ======================================================
+             PASO 1 - RELACIÓN DE VELOCIDAD
+             ====================================================== -->
+        <section class="seccion-resultados-combinada">
+            <h3>1. Cálculo de la relación de velocidad</h3>
+
+            <div class="grid-combinada-paso-1">
+
+                <div class="paso-combinada">
+                    <h4>Fórmulas aplicadas</h4>
+
+                    <div class="bloque-amarillo">
+                        Rv total = RPM motor / RPM salida requerida
+                    </div>
+
+                    <p class="texto-explicativo-combinada">
+                        La relación total requerida indica la reducción total que necesita el sistema.
+                    </p>
+
+                    <div class="bloque-amarillo">
+                        Rv piñón-cadena = Rv total / valor ingresado
+                    </div>
+
+                    <p class="texto-explicativo-combinada">
+                        Se toma la relación total y se divide entre el valor ingresado para obtener
+                        la relación requerida en la etapa piñón-cadena.
+                    </p>
+
+                    <div class="bloque-amarillo">
+                        RPM salida polea = RPM motor / Rv polea-correa
+                    </div>
+
+                    <div class="bloque-amarillo">
+                        RPM salida general = RPM motor / (Rv polea-correa × Rv piñón-cadena)
+                    </div>
+                </div>
+
+                <div class="paso-combinada">
+                    <h4>Distribución de la reducción</h4>
+
+                    <div class="campo">
+                        <label for="relacionPoleaCombinada">
+                            Relación elegida para polea-correa
+                        </label>
+                        <input 
+                            type="number"
+                            id="relacionPoleaCombinada"
+                            min="1"
+                            step="0.01"
+                            placeholder="Ej: 5"
+                            autocomplete="off"
+                            oninput="calcularRelacionVelocidadCombinada()"
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="valorDivisionPinonCombinada">
+                            Valor para calcular relación de piñón-cadena
+                        </label>
+                        <input 
+                            type="number"
+                            id="valorDivisionPinonCombinada"
+                            min="1"
+                            step="0.01"
+                            placeholder="Ej: 5"
+                            autocomplete="off"
+                            oninput="calcularRelacionVelocidadCombinada()"
+                        >
+                    </div>
+
+                    <p class="texto-explicativo-combinada">
+                        Ejemplo:
+                        <br>
+                        Rv total = 14,58
+                        <br>
+                        Valor ingresado = 5
+                        <br>
+                        Rv piñón-cadena = 14,58 / 5 = 2,91
+                    </p>
+
+                    <div class="limites-combinada">
+                        <div>
+                            <strong>Polea-correa</strong>
+                            <span>Máx. 6:1</span>
+                        </div>
+
+                        <div>
+                            <strong>Piñón-cadena</strong>
+                            <span>Máx. 4:1</span>
+                        </div>
+                    </div>
+
+                    <div class="botones-combinada">
+                        <button 
+                            type="button"
+                            id="btnCalcularCombinada"
+                            onclick="calcularRelacionVelocidadCombinada()"
+                        >
+                            Calcular
+                        </button>
+
+                        <button 
+                            type="button"
+                            class="btn-secundario"
+                            onclick="limpiarTransmisionCombinada()"
+                        >
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="paso-combinada">
+                    <h4>Resultados del paso 1</h4>
+
+                    <label>Relación total requerida</label>
+                    <div id="relacionTotalCombinada">-</div>
+
+                    <p id="detalleRelacionTotalCombinada">
+                        Ingrese las RPM del motor y la salida requerida.
+                    </p>
+
+                    <label>Relación requerida para piñón-cadena</label>
+                    <div id="relacionPinonCadenaCombinada" class="resultado-principal-combinada">-</div>
+
+                    <p id="detalleRelacionPinonCadenaCombinada">
+                        Aquí se mostrará el resultado de dividir la relación total entre el valor ingresado.
+                    </p>
+
+                    <label>RPM después de polea-correa</label>
+                    <div id="rpmIntermediaCombinada">-</div>
+
+                    <p id="detalleRpmIntermediaCombinada">
+                        Aquí se mostrará la velocidad después de la primera etapa.
+                    </p>
+
+                    <label>RPM salida general</label>
+                    <div id="rpmFinalObtenidaCombinada">-</div>
+
+                    <p id="detalleRpmFinalObtenidaCombinada">
+                        Aquí se mostrará la velocidad final del sistema.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================
+             ETAPA 1 - CONFIGURACIÓN PARA POLEA-CORREA
+             ====================================================== -->
+        <section class="seccion-resultados-combinada seccion-polea-combinada">
+            <h3>2. Configuración para etapa polea-correa</h3>
+
+            <div class="grid-etapa-polea-combinada">
+
+                <div class="paso-combinada">
+                    <h4>Factor de servicio</h4>
+
+                    <div class="campo">
+                        <label for="tipoMaquinaPoleaCombinada">Tipo de Máquina (Equipo Impulsado)</label>
+                        <select id="tipoMaquinaPoleaCombinada" onchange="actualizarConfiguracionPoleaCombinada()">
+                            <option value="" selected disabled>Seleccione tipo de máquina</option>
+
+                            <optgroup label="Carga Ligera (Base 1.0)">
+                                <option value="1.0">Agitadores para Líquidos</option>
+                                <option value="1.0">Sopladores y Aspiradoras</option>
+                                <option value="1.0">Bombas Centrífugas y Compresoras</option>
+                                <option value="1.0">Ventiladores hasta 10 HP</option>
+                                <option value="1.0">Transportadores de Trabajo Ligero</option>
+                            </optgroup>
+
+                            <optgroup label="Carga Moderada (Base 1.1)">
+                                <option value="1.1">Transportadores de Banda (Arena/Grano)</option>
+                                <option value="1.1">Amasadora</option>
+                                <option value="1.1">Ventiladores de más de 10 HP</option>
+                                <option value="1.1">Generadores / Ejes de Línea</option>
+                                <option value="1.1">Maquinaria de Lavandería / Imprenta</option>
+                                <option value="1.1">Máquinas-Herramientas / Prensas</option>
+                                <option value="1.1">Bombas Rotatorias DP</option>
+                                <option value="1.1">Cribas Giratorias y Vibratorias</option>
+                            </optgroup>
+
+                            <optgroup label="Carga Pesada (Base 1.2)">
+                                <option value="1.2">Maquinaria para Ladrillos</option>
+                                <option value="1.2">Elevadores de Cangilones</option>
+                                <option value="1.2">Excitadores / Pulverizadores</option>
+                                <option value="1.2">Compresores de Pistones</option>
+                                <option value="1.2">Molinos de Martillos</option>
+                                <option value="1.2">Hidropulper / Maquinaria Textil</option>
+                                <option value="1.2">Maquinaria para Molinos de Sierra</option>
+                            </optgroup>
+
+                            <optgroup label="Carga Muy Pesada (Base 1.3)">
+                                <option value="1.3">Molinos (Bolas-Barras-Rodillos)</option>
+                                <option value="1.3">Quebradoras (Giratorias-Mordaza)</option>
+                                <option value="1.3">Malacates</option>
+                                <option value="1.3">Calandria / Extrusoras</option>
+                            </optgroup>
+
+                            <option value="2.0">Equipo con Ahogador</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="tipoServicioPoleaCombinada">Horas de Servicio Diario</label>
+                        <select id="tipoServicioPoleaCombinada" onchange="actualizarConfiguracionPoleaCombinada()">
+                            <option value="" selected disabled>Seleccione horas de servicio</option>
+                            <option value="0">Intermitente (Menos de 6h)</option>
+                            <option value="0.1">Normal (6 a 16h)</option>
+                            <option value="0.2">Continuo (16 a 24h)</option>
+                        </select>
+                    </div>
+
+                    <label>FS sugerido por tabla</label>
+                    <div id="fsSugeridoPoleaCombinada" class="resultado-verde-combinada">-</div>
+
+                    <p id="detalleFsPoleaCombinada">
+                        Seleccione tipo de máquina y horas de servicio.
+                    </p>
+                </div>
+
+                <div class="paso-combinada">
+                    <h4>Potencia de diseño para polea-correa</h4>
+
+                    <label>Potencia tomada desde datos generales</label>
+                    <div id="potenciaPoleaCombinada">-</div>
+
+                    <div class="fila-check-combinada">
+                        <input 
+                            type="checkbox" 
+                            id="usarNDPoleaCombinada" 
+                            onchange="toggleNDPoleaCombinada()"
+                        >
+                        <label for="usarNDPoleaCombinada">¿Solicita Factor de Diseño (Nd)?</label>
+                    </div>
+
+                    <div class="campo">
+                        <label for="valorNDPoleaCombinada">Valor Nd</label>
+                        <input 
+                            type="number" 
+                            id="valorNDPoleaCombinada" 
+                            placeholder="Ej: 1.3" 
+                            step="0.01"
+                            disabled
+                            oninput="actualizarConfiguracionPoleaCombinada()"
+                        >
+                    </div>
+
+                    <label>P × Nd → Motor comercial</label>
+                    <div id="potenciaNdPoleaCombinada">N/A</div>
+
+                    <label>Factor de Servicio Final (F.S)</label>
+                    <div id="fsFinalPoleaCombinada" class="resultado-verde-combinada">-</div>
+
+                    <label>Potencia de Diseño Final (Pd)</label>
+                    <div id="pdPoleaCombinada">-</div>
+                </div>
+
+                <div class="paso-combinada">
+                    <h4>Datos para calculadora polea-correa</h4>
+
+                    <label>Potencia calculada HP</label>
+                    <div id="datoPoleaPotencia">-</div>
+
+                    <label>RPM Motor entrada</label>
+                    <div id="datoPoleaRpmEntrada">-</div>
+
+                    <label>RPM salida polea</label>
+                    <div id="datoPoleaRpmSalida">-</div>
+
+                    <label>Tecnología de Banda</label>
+                    <select id="tecnologiaBandaPoleaCombinada" class="select-combinada-especial" onchange="actualizarConfiguracionPoleaCombinada()">
+                        <option value="" selected disabled>Seleccione tecnología de banda</option>
+                        <option value="convencional">Convencional Estándar (A, B, C, D)</option>
+                        <option value="convencionalX">Convencional Dentada / X (AX, BX, CX)</option>
+                        <option value="altaCapacidad">Alta Capacidad Estándar (3V, 5V, 8V)</option>
+                        <option value="altaCapacidadX">Alta Capacidad Dentada / X (3VX, 5VX)</option>
+                    </select>
+
+                    <label>Tipo de Ranura de Polea</label>
+                    <select id="tipoRanuraPoleaCombinada" class="select-combinada-especial" onchange="actualizarConfiguracionPoleaCombinada()">
+                        <option value="" selected disabled>Seleccione tipo de ranura</option>
+                        <option value="estandar">Polea Estándar</option>
+                        <option value="profunda">Polea con Ranura Profunda</option>
+                    </select>
+
+                    <button 
+                        type="button" 
+                        class="btn-calcular-polea-combinada"
+                        onclick="calcularEtapaPoleaCorreaCombinada()"
+                    >
+                        Calcular etapa polea-correa
+                    </button>
+
+                    <p id="detalleDatosPoleaCombinada">
+                        Estos valores serán la base para el diseño detallado en la calculadora de polea-correa.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================
+             CAMPOS OCULTOS PARA REUTILIZAR JS DE POLEA-CORREA
+             ====================================================== -->
+        <section class="campos-ocultos-polea">
+            <select id="tipoMaquina">
+                <option value="1.0">Agitadores para Líquidos</option>
+                <option value="1.1">Transportadores de Banda (Arena/Grano)</option>
+                <option value="1.2">Molinos de Martillos</option>
+                <option value="1.3">Molinos (Bolas-Barras-Rodillos)</option>
+                <option value="2.0">Equipo con Ahogador</option>
+            </select>
+
+            <select id="tipoServicio">
+                <option value="0">Intermitente (Menos de 6h)</option>
+                <option value="0.1">Normal (6 a 16h)</option>
+                <option value="0.2">Continuo (16 a 24h)</option>
+            </select>
+
+            <span id="fsSugerido">1.0</span>
+
+            <input type="number" id="potenciaPrincipal">
+            <input type="checkbox" id="usarND">
+            <input type="number" id="valorND">
+            <input type="text" id="resPotND">
+            <input type="number" id="fsManual">
+            <input type="text" id="resPotFS">
+            <input type="number" id="rpmEntrada">
+            <input type="number" id="rpmSalida">
+
+            <select id="tecnologiaBanda">
+                <option value="convencional">Convencional Estándar (A, B, C, D)</option>
+                <option value="convencionalX">Convencional Dentada / X (AX, BX, CX)</option>
+                <option value="altaCapacidad">Alta Capacidad Estándar (3V, 5V, 8V)</option>
+                <option value="altaCapacidadX">Alta Capacidad Dentada / X (3VX, 5VX)</option>
+            </select>
+
+            <select id="tipoRanuraPolea">
+                <option value="estandar">Polea Estándar</option>
+                <option value="profunda">Polea con Ranura Profunda</option>
+            </select>
+        </section>
+
+        <!-- ======================================================
+             RESULTADOS DETALLADOS DE POLEA-CORREA
+             ====================================================== -->
+        <section class="seccion-resultados-combinada seccion-resultados-polea-combinada">
+            <h3>3. Resultados detallados etapa polea-correa</h3>
+
+            <div id="resultado" class="resultado resultado-polea-combinada"></div>
+        </section>
+
+        <!-- ======================================================
+             ETAPA 2 - CONFIGURACIÓN PARA PIÑÓN-CADENA
+             ====================================================== -->
+        <section class="seccion-resultados-combinada seccion-cadena-combinada">
+            <h3>4. Configuración para etapa piñón-cadena</h3>
+
+            <div class="grid-etapa-cadena-combinada">
+
+                <div class="paso-combinada">
+                    <h4>Datos calculados para cadena</h4>
+
+                    <label>Potencia tomada desde datos generales</label>
+                    <div id="datoCadenaPotencia">-</div>
+
+                    <label>RPM piñón conductor</label>
+                    <div id="datoCadenaRpmConductor">-</div>
+
+                    <label>RPM piñón conducido</label>
+                    <div id="datoCadenaRpmConducido">-</div>
+
+                    <label>Relación de velocidad para cadena</label>
+                    <div id="datoCadenaRelacion" class="resultado-principal-combinada">-</div>
+
+                    <p id="detalleDatosCadenaCombinada">
+                        La entrada de cadena corresponde a la salida de la etapa polea-correa.
+                    </p>
+                </div>
+
+                <div class="paso-combinada">
+                    <h4>Factor de seguridad para cadena</h4>
+
+                    <div class="campo">
+                        <label for="tipoCargaCadenaCombinada">Tipo de carga</label>
+                        <select id="tipoCargaCadenaCombinada" onchange="actualizarConfiguracionCadenaCombinada()">
+                            <option value="" selected disabled>Seleccione tipo de carga</option>
+                            <option value="uniforme">Uniforme</option>
+                            <option value="fluctuante">Fluctuante</option>
+                            <option value="muyFluctuante">Muy fluctuante</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="fuentePotenciaCadenaCombinada">Fuente de potencia</label>
+                        <select id="fuentePotenciaCadenaCombinada" onchange="actualizarConfiguracionCadenaCombinada()">
+                            <option value="" selected disabled>Seleccione fuente de potencia</option>
+                            <option value="combustionConvertidor">Motor de combustión interna con convertidor hidráulico</option>
+                            <option value="electricoTurbina">Motor eléctrico o turbina</option>
+                            <option value="combustionEmbrague">Motor de combustión interna con embrague o caja mecánica</option>
+                        </select>
+                    </div>
+
+                    <label>Factor de seguridad esperado</label>
+                    <div id="fsCadenaCombinada" class="resultado-verde-combinada">-</div>
+
+                    <p id="detalleFsCadenaCombinada">
+                        Seleccione tipo de carga y fuente de potencia.
+                    </p>
+                </div>
+
+                <div class="paso-combinada">
+                    <h4>Selección de cadena</h4>
+
+                    <div class="campo">
+                        <label for="numeroHilerasCadenaCombinada">Número de hileras</label>
+                        <select id="numeroHilerasCadenaCombinada" onchange="actualizarConfiguracionCadenaCombinada()">
+                            <option value="" selected disabled>Seleccione número de hileras</option>
+                            <option value="1">1 hilera - sencilla</option>
+                            <option value="2">2 hileras - doble</option>
+                            <option value="3">3 hileras - triple</option>
+                            <option value="4">4 hileras</option>
+                            <option value="5">5 hileras</option>
+                            <option value="6">6 hileras</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="criterioSeleccionPinonCombinada">Criterio para ordenar opciones</label>
+                        <select id="criterioSeleccionPinonCombinada" onchange="actualizarConfiguracionCadenaCombinada()">
+                            <option value="" selected disabled>Seleccione criterio</option>
+                            <option value="normal">Normal - más cercano al HP requerido</option>
+                            <option value="pequenoMenosDientes">Piñón más pequeño con menor número de dientes</option>
+                            <option value="pequenoMasDientes">Piñón más pequeño con mayor número de dientes</option>
+                            <option value="grandeMenosDientes">Piñón más grande con menor número de dientes</option>
+                            <option value="grandeMasDientes">Piñón más grande con mayor número de dientes</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="porcentajeSobredimensionCadenaCombinada">Sobredimensionamiento máximo permitido (%)</label>
+                        <input 
+                            type="number"
+                            id="porcentajeSobredimensionCadenaCombinada"
+                            min="0"
+                            step="1"
+                            value="10"
+                            placeholder="Ej: 10"
+                            oninput="actualizarConfiguracionCadenaCombinada()"
+                        >
+                    </div>
+
+                    <div class="fila-check-combinada">
+                        <input 
+                            type="checkbox"
+                            id="mostrarTodasOpcionesCadenaCombinada"
+                            onchange="actualizarConfiguracionCadenaCombinada()"
+                        >
+                        <label for="mostrarTodasOpcionesCadenaCombinada">
+                            Mostrar todas las opciones válidas
+                        </label>
+                    </div>
+
+                    <button 
+                        type="button"
+                        class="btn-calcular-cadena-combinada"
+                        onclick="calcularEtapaPinonCadenaCombinada()"
+                    >
+                        Calcular etapa piñón-cadena
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================
+             CAMPOS OCULTOS DE ENTRADA PARA PIÑÓN-CADENA
+             ====================================================== -->
+        <section class="campos-ocultos-cadena">
+            <input type="number" id="potenciaMotorCadena">
+            <input type="number" id="rpmConductorCadena">
+            <input type="number" id="rpmConducidoCadena">
+
+            <select id="numeroHilerasCadena">
+                <option value="">Seleccione número de hileras</option>
+                <option value="1">1 hilera - sencilla</option>
+                <option value="2">2 hileras - doble</option>
+                <option value="3">3 hileras - triple</option>
+                <option value="4">4 hileras</option>
+                <option value="5">5 hileras</option>
+                <option value="6">6 hileras</option>
+            </select>
+
+            <select id="tipoCargaCadena">
+                <option value="">Seleccione tipo de carga</option>
+                <option value="uniforme">Uniforme</option>
+                <option value="fluctuante">Fluctuante</option>
+                <option value="muyFluctuante">Muy fluctuante</option>
+            </select>
+
+            <select id="fuentePotenciaCadena">
+                <option value="">Seleccione fuente de potencia</option>
+                <option value="combustionConvertidor">Motor de combustión interna con convertidor hidráulico</option>
+                <option value="electricoTurbina">Motor eléctrico o turbina</option>
+                <option value="combustionEmbrague">Motor de combustión interna con embrague o caja mecánica</option>
+            </select>
+
+            <select id="criterioSeleccionPinon">
+                <option value="normal">Normal - más cercano al HP requerido</option>
+                <option value="pequenoMenosDientes">Piñón más pequeño con menor número de dientes</option>
+                <option value="pequenoMasDientes">Piñón más pequeño con mayor número de dientes</option>
+                <option value="grandeMenosDientes">Piñón más grande con menor número de dientes</option>
+                <option value="grandeMasDientes">Piñón más grande con mayor número de dientes</option>
+            </select>
+
+            <input type="number" id="porcentajeSobredimensionCadena">
+            <input type="checkbox" id="mostrarTodasOpcionesCadena">
+
+            <input type="text" id="factorAplicadoCadena">
+            <input type="text" id="factorHilerasCadena">
+
+            <button id="btnCalcularCadena" type="button">Calcular</button>
+            <button id="btnLimpiarCadena" type="button">Limpiar</button>
+        </section>
+
+        <!-- ======================================================
+             RESULTADOS DETALLADOS DE PIÑÓN-CADENA
+             ====================================================== -->
+        <section class="seccion-resultados-combinada seccion-resultados-cadena-combinada">
+            <h3>5. Resultados detallados etapa piñón-cadena</h3>
+
+            <div class="resumen-cadena-combinada">
+
+                <div class="res-col-cadena">
+                    <p class="res-label">Factor de Seguridad:</p>
+                    <strong id="factorSeguridadCadena" class="res-valor-verde-oscuro">-</strong>
+                    <p id="detalleFactorCadena" class="res-sub">Seleccione tipo de carga y fuente de potencia.</p>
+                </div>
+
+                <div class="res-col-cadena">
+                    <p class="res-label">Potencia de Diseño:</p>
+                    <strong id="potenciaDisenoCadena" class="res-valor-azul">-</strong>
+                    <p id="detallePotenciaDisenoCadena" class="res-sub">Ingrese la potencia del motor.</p>
+                </div>
+
+                <div class="res-col-cadena">
+                    <p class="res-label">Relación de Velocidad:</p>
+                    <strong id="relacionVelocidadCadena" class="res-valor-morado">-</strong>
+                    <p id="detalleRelacionVelocidadCadena" class="res-sub">Ingrese las RPM.</p>
+                </div>
+
+                <div class="res-col-cadena">
+                    <p class="res-label">HP requerido por hilera:</p>
+                    <strong id="hpPorHileraCadena" class="res-valor-naranja">-</strong>
+                    <p id="detalleHpPorHileraCadena" class="res-sub">Ingrese los datos.</p>
+                </div>
+
+            </div>
+
+            <div class="bloque-cadena-combinada">
+                <h4>Selección de piñón conductor</h4>
+
+                <label>Piñón conductor seleccionado</label>
+                <div id="pinonSeleccionadoCadena" class="resultado-verde-combinada">Seleccione una opción</div>
+
+                <p id="detallePinonSeleccionadoCadena">
+                    Marque con check una de las opciones disponibles.
+                </p>
+
+                <div id="tablaCandidatosCadena">
+                    <div class="advertencia-cadena">
+                        Ingrese los datos y presione calcular para ver las opciones disponibles.
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-resultados-cadena-combinada">
+
+                <div class="bloque-cadena-combinada">
+                    <h4>Dimensiones del piñón conductor</h4>
+
+                    <label>Referencia del piñón conductor</label>
+                    <div id="referenciaDimensionPinonCadena" class="resultado-amarillo-combinada">Seleccione un piñón</div>
+
+                    <p id="detalleDimensionPinonCadena">
+                        Al seleccionar una opción, aquí se mostrarán las dimensiones.
+                    </p>
+
+                    <div id="tablaDimensionesPinonCadena">
+                        No hay dimensiones para mostrar todavía.
+                    </div>
+                </div>
+
+                <div class="bloque-cadena-combinada">
+                    <h4>Piñón conducido</h4>
+
+                    <label>Dientes teóricos del piñón conducido</label>
+                    <div id="dientesTeoricosConducidoCadena" class="resultado-amarillo-combinada">
+                        Seleccione un piñón conductor
+                    </div>
+
+                    <p id="detalleDientesConducidoCadena">
+                        Primero seleccione una opción en la tabla.
+                    </p>
+
+                    <label>Dientes comerciales del piñón conducido</label>
+                    <div id="dientesComercialesConducidoCadena" class="resultado-amarillo-combinada">-</div>
+
+                    <p id="detalleRedondeoConducidoCadena">
+                        Se redondea al número entero comercial más cercano.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="grid-resultados-cadena-combinada">
+
+                <div class="bloque-cadena-combinada">
+                    <h4>Dimensiones del piñón conducido</h4>
+
+                    <label>Referencia del piñón conducido</label>
+                    <div id="referenciaDimensionPinonConducidoCadena" class="resultado-amarillo-combinada">
+                        Seleccione un piñón conductor
+                    </div>
+
+                    <p id="detalleDimensionPinonConducidoCadena">
+                        Aquí se mostrarán las dimensiones del piñón conducido.
+                    </p>
+
+                    <div id="tablaDimensionesPinonConducidoCadena">
+                        No hay dimensiones para mostrar todavía.
+                    </div>
+                </div>
+
+                <div class="bloque-cadena-combinada">
+                    <h4>Distancia, longitud y eslabones</h4>
+
+                    <label>Distancia mínima entre centros</label>
+                    <div id="distanciaCentrosMinimaCadena" class="resultado-verde-combinada">
+                        Seleccione un piñón conductor
+                    </div>
+
+                    <p id="detalleDistanciaCentrosCadena">
+                        Aquí se mostrará la distancia mínima entre centros.
+                    </p>
+
+                    <label>Longitud teórica de cadena</label>
+                    <div id="longitudCadenaCalculada" class="resultado-amarillo-combinada">
+                        Seleccione un piñón conductor
+                    </div>
+
+                    <p id="detalleLongitudCadena">
+                        Aquí se calculará la longitud teórica de la cadena.
+                    </p>
+
+                    <label>Paso de la cadena</label>
+                    <div id="pasoCadenaCalculado" class="resultado-amarillo-combinada">-</div>
+
+                    <label>Número teórico de eslabones</label>
+                    <div id="numeroEslabonesTeorico" class="resultado-amarillo-combinada">-</div>
+
+                    <label>Número recomendado de eslabones</label>
+                    <div id="numeroEslabonesRecomendado" class="resultado-verde-combinada">-</div>
+
+                    <p id="detalleNumeroEslabones">
+                        El número de eslabones se redondea al número par más cercano.
+                    </p>
+
+                    <label>Longitud final ajustada</label>
+                    <div id="longitudCadenaAjustada" class="resultado-amarillo-combinada">-</div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script src="JS/polea-correa.js"></script>
+    <script src="JS/pinon-cadena.js"></script>
+    <script src="JS/transmision-combinada.js"></script>
+
+</body>
+</html>
