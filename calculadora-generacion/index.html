@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora BRA, BRP y Biodigestor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content">
+      <p class="tag">Asignatura: Generación</p>
+      <h1>Calculadora de Potenciales Energéticos BRA y BRP</h1>
+      <p>
+        Página académica para calcular biomasa residual agrícola, biomasa residual pecuaria,
+        potencial energético y volumen aproximado de biodigestor con interpolación de tiempo de retención.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card intro">
+      <h2>Datos generales del municipio</h2>
+      <div class="grid-4">
+        <label>
+          Temperatura promedio [°C]
+          <input id="temperatura" type="number" step="any" value="28" />
+        </label>
+        <label>
+          Altitud [msnm]
+          <input id="altitud" type="number" step="any" value="1200" />
+        </label>
+        <label>
+          PCI biogás [kJ/Nm³]
+          <input id="pciBiogas" type="number" step="any" value="21600" />
+        </label>
+        <label>
+          Diámetro bolsa [m]
+          <input id="diametroBolsa" type="number" step="any" value="2" />
+        </label>
+      </div>
+      <div class="grid-2 compact">
+        <label>
+          Fracción ocupada por gas
+          <input id="fraccionGas" type="number" step="any" value="0.60" />
+        </label>
+        <label>
+          Decimales de resultados
+          <input id="decimales" type="number" min="0" max="6" value="2" />
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>1. Potencial energético BRA</h2>
+          <p>Seleccione cultivos, ingrese área local y calcule el potencial por residuo y por cultivo.</p>
+        </div>
+        <button type="button" onclick="agregarCultivoBRA()">+ Agregar cultivo</button>
+      </div>
+      <div class="formula">
+        PE<sub>BRA</sub> = Ac × RC × FR × Y<sub>BAs</sub> × PCI × DR &nbsp;&nbsp; | &nbsp;&nbsp;
+        RC = Producción nacional / Área sembrada nacional
+      </div>
+      <div class="table-wrap">
+        <table id="tablaEntradasBRA">
+          <thead>
+            <tr>
+              <th>Cultivo</th>
+              <th>Área local [ha]</th>
+              <th>Área sembrada nacional [ha]</th>
+              <th>Producción nacional [t/año]</th>
+              <th>RC [t/ha]</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button class="primary" type="button" onclick="calcularBRA()">Calcular BRA</button>
+      <div id="resumenBRA" class="result"></div>
+      <div class="table-wrap">
+        <table id="tablaResultadosBRA">
+          <thead>
+            <tr>
+              <th>Cultivo</th>
+              <th>Tipo residuo</th>
+              <th>Origen</th>
+              <th>Área [ha]</th>
+              <th>RC</th>
+              <th>FR</th>
+              <th>YBAs</th>
+              <th>PCI [kJ/kg]</th>
+              <th>DR</th>
+              <th>PE [GJ/año]</th>
+              <th>PE [MWh/año]</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>2. Potencial energético BRP</h2>
+          <p>Seleccione especies, ingrese número de animales y factor de recolección.</p>
+        </div>
+        <button type="button" onclick="agregarEspecieBRP()">+ Agregar especie</button>
+      </div>
+      <div class="formula">
+        Qbg = N × PE<sub>d</sub> × DR × PB/kg &nbsp;&nbsp; | &nbsp;&nbsp;
+        PE<sub>BRP</sub>[GJ/año] = Qbg × PCI<sub>biogás</sub> × 365 / 10⁶
+      </div>
+      <div class="table-wrap">
+        <table id="tablaEntradasBRP">
+          <thead>
+            <tr>
+              <th>Especie</th>
+              <th>N animales</th>
+              <th>DR aplicado [0-1]</th>
+              <th>Excreta [kg/animal·día]</th>
+              <th>Biogás [Nm³/kg]</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button class="primary" type="button" onclick="calcularBRP()">Calcular BRP y biodigestor</button>
+      <div id="resumenBRP" class="result"></div>
+      <div class="table-wrap">
+        <table id="tablaResultadosBRP">
+          <thead>
+            <tr>
+              <th>Especie</th>
+              <th>N animales</th>
+              <th>Excreta [kg/animal·día]</th>
+              <th>DR</th>
+              <th>Biogás [Nm³/kg]</th>
+              <th>Qbg [Nm³/d]</th>
+              <th>PE [GJ/año]</th>
+              <th>PE [MWh/año]</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. Biodigestor</h2>
+      <p>
+        El tiempo de retención se obtiene por interpolación lineal con la tabla de temperatura.
+        Para el ejemplo del PDF, a 28 °C se obtiene aproximadamente 34 días.
+      </p>
+      <div class="formula">
+        Vgas = Qbg × tr &nbsp;&nbsp; | &nbsp;&nbsp;
+        Vbiodigestor = Vgas / fracción gas &nbsp;&nbsp; | &nbsp;&nbsp;
+        L = Vbiodigestor / (πd²/4)
+      </div>
+      <div id="resumenBio" class="result"></div>
+      <div class="table-wrap">
+        <table id="tablaBiodigestor">
+          <thead>
+            <tr>
+              <th>Especie</th>
+              <th>Qbg [Nm³/d]</th>
+              <th>tr [días]</th>
+              <th>Vgas [m³]</th>
+              <th>Fracción gas</th>
+              <th>V biodigestor [m³]</th>
+              <th>Diámetro [m]</th>
+              <th>Área sección [m²]</th>
+              <th>Longitud bolsa [m]</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. Tablas cargadas en la página</h2>
+      <div class="tabs">
+        <button type="button" onclick="mostrarReferencia('bra')">Tabla residuos BRA</button>
+        <button type="button" onclick="mostrarReferencia('brp')">Tabla especies BRP</button>
+        <button type="button" onclick="mostrarReferencia('rc')">Tablas RC arroz, plátano y caña</button>
+        <button type="button" onclick="mostrarReferencia('tr')">Tabla retención</button>
+      </div>
+      <div id="tablaReferencia" class="table-wrap"></div>
+    </section>
+  </main>
+
+  <footer>
+    Calculadora académica basada en el ejercicio BRA y BRP. Verifique siempre las fuentes y factores antes de entregar resultados finales.
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
